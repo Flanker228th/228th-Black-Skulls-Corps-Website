@@ -6,7 +6,7 @@
 <title>228th Black Skulls Corps</title>
 <script>/* Site update check: phones keep old copies of pages for a while, so each page asks for the current
    version and, if it has changed, reloads itself fresh. Bump the number here and in version.txt on every publish. */
-(function(){var v="202610262116";
+(function(){var v="202610312359";
   var u=new URL(location.href);if(u.searchParams.get("preview")||u.searchParams.get("code")||/access_token|type=recovery/.test(location.hash))return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():"";}).then(function(t){t=t.trim();
     if(!t||t===v||u.searchParams.get("v")===t)return;u.searchParams.set("v",t);location.replace(u.href);}).catch(function(){});})();</script>
@@ -590,13 +590,32 @@ footer ul a:hover{color:var(--accent)}
 @keyframes gridDrift{to{transform:translateY(120px) scale(1.15)}}
 @keyframes spinIn{from{transform:rotate(-25deg) scale(.6);opacity:.2}}
 
-/* opening intro: plays once per visit, skippable, never for reduced motion */
-#intro{position:fixed;inset:0;z-index:100;background:#000;display:grid;place-items:center;transition:opacity .9s ease}
-#intro::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(150,10,18,.55),rgba(60,0,4,.25) 45%,transparent 75%);opacity:0;animation:introGlow 2.4s 1.6s ease-in forwards}
-@keyframes introGlow{to{opacity:1}}
-#intro .disc{--s:min(80vw,62vh,460px);width:var(--s);height:var(--s);position:relative;-webkit-mask:radial-gradient(closest-side,#000 95%,transparent 100%);mask:radial-gradient(closest-side,#000 95%,transparent 100%)}
-#intro video{width:100%;height:100%;object-fit:cover;display:block}
-#intro button{position:absolute;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));background:none;border:1px solid #333;color:#aaa;font:500 .75rem 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:.6em 1em;cursor:pointer}
+/* opening intro: plays once per visit, skippable, never for reduced motion.
+   Scan line + boot text, then the skull lands, blasters shoot up one at a time, the sword drives down,
+   the name decodes, and a red line cuts it away to the site. Emblem art is borrowed from the hero at runtime. */
+#intro{position:fixed;inset:0;z-index:100;background:var(--bg);overflow:hidden;transition:opacity .7s ease}
+#intro .i-camo{position:absolute;inset:-10%;background:url(images/intro-camo.webp) center/420px repeat;filter:grayscale(1) contrast(1.4) brightness(.35);opacity:0;mix-blend-mode:screen}
+#intro .i-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 46%,rgba(179,20,27,.55),rgba(80,0,6,.22) 38%,transparent 68%);opacity:0}
+#intro .i-scan{position:absolute;left:0;right:0;top:0;height:2px;background:var(--accent);box-shadow:0 0 18px 4px rgba(226,51,59,.6);opacity:0}
+#intro .i-lines{position:absolute;inset:0;pointer-events:none;opacity:.06;background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.5) 0 1px,transparent 1px 3px)}
+#intro .i-boot{position:absolute;top:calc(18px + env(safe-area-inset-top,0px));left:max(18px,env(safe-area-inset-left,0px));margin:0;padding:0;list-style:none;font:500 clamp(.62rem,1.6vw,.78rem)/1.7 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+#intro .i-boot li{white-space:pre;min-height:1.7em}
+#intro .i-boot .ok{color:var(--accent)}
+#intro .i-center{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:clamp(10px,2.4vh,22px);padding:0 16px}
+#intro .i-emblem{height:min(52vh,62vw,520px);aspect-ratio:948/1171;position:relative;max-width:100%}
+#intro .i-emblem img{position:absolute;display:block;opacity:0;will-change:transform,opacity,filter}
+#intro .i-sword{left:34.18%;top:0;width:30.38%;height:100%;z-index:1}
+#intro .i-ba{left:3.38%;top:25.96%;width:96.62%;height:57.05%;z-index:2}
+#intro .i-bb{left:0;top:25.96%;width:95.36%;height:56.96%;z-index:2}
+#intro .i-skull{left:24.05%;top:30.4%;width:50.95%;height:46.29%;z-index:3}
+#intro .i-eyes{position:absolute;left:37%;top:56%;width:26%;height:9%;z-index:4;background:radial-gradient(ellipse at 30% 50%,rgba(255,40,40,.9),transparent 45%),radial-gradient(ellipse at 70% 50%,rgba(255,40,40,.9),transparent 45%);filter:blur(6px);mix-blend-mode:screen;opacity:0}
+#intro .i-ring{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border:2px solid var(--accent);border-radius:50%;opacity:0;z-index:5}
+#intro .i-title{margin:0;text-align:center;font:800 clamp(2rem,7.2vw,4.6rem)/.9 var(--display);letter-spacing:.04em;text-transform:uppercase;color:var(--fg);text-shadow:0 0 24px rgba(226,51,59,.25);min-height:.9em;max-width:100%;overflow-wrap:anywhere}
+#intro .i-title span{color:var(--accent)}
+#intro .i-sub{margin:0;text-align:center;font:500 clamp(.62rem,1.7vw,.8rem) var(--mono);letter-spacing:.32em;text-transform:uppercase;color:var(--muted);opacity:0}
+#intro .i-sub b{color:var(--accent);font-weight:500}
+#intro .i-cut{position:absolute;left:0;right:0;top:50%;height:2px;margin-top:-1px;background:var(--accent);box-shadow:0 0 16px rgba(226,51,59,.7);transform:scaleX(0);z-index:6}
+#intro button{position:absolute;z-index:7;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));background:none;border:1px solid #333;color:#aaa;font:500 .75rem 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;padding:.6em 1em;cursor:pointer}
 #intro button:hover{color:#fff;border-color:#777}
 #intro.out{opacity:0;pointer-events:none}
 html.intro-on,html.intro-on body{overflow:hidden}
@@ -605,7 +624,14 @@ html.intro-on,html.intro-on body{overflow:hidden}
 <body>
 
 <div id="intro" aria-hidden="true" hidden>
-  <div class="disc"><video id="intro-video" muted playsinline preload="auto"><source src="intro.mp4" type="video/mp4"><source id="intro-last" src="intro.webm" type="video/webm"></video></div>
+  <div class="i-camo"></div><div class="i-glow"></div><div class="i-scan"></div>
+  <ul class="i-boot"><li></li><li></li><li></li></ul>
+  <div class="i-center">
+    <div class="i-emblem"><img class="i-sword" alt=""><img class="i-ba" alt=""><img class="i-bb" alt=""><img class="i-skull" alt=""><div class="i-eyes"></div><div class="i-ring"></div></div>
+    <p class="i-title"></p>
+    <p class="i-sub">Est. 28 Feb 2010 <b>//</b> Community first</p>
+  </div>
+  <div class="i-lines"></div><div class="i-cut"></div>
   <button type="button" id="intro-skip">Skip</button>
 </div>
 <script>
@@ -613,20 +639,61 @@ html.intro-on,html.intro-on body{overflow:hidden}
   // Opening animation: plays whenever someone opens the site from outside it (typed address, bookmark, a link
   // from Discord), but not when moving between the site's own pages, and not again within a minute.
   // Never in the edit page preview or for reduced-motion viewers.
-  var box=document.getElementById('intro'), v=document.getElementById('intro-video'), seen=false;
+  var box=document.getElementById('intro'), seen=false;
   try{var ref=document.referrer?new URL(document.referrer):null;if(ref&&ref.origin===location.origin)seen=true;}catch(e){}
   try{if(Date.now()-(+localStorage.getItem('228th-intro-at')||0)<60000)seen=true;}catch(e){}
-  if(seen||/[?&]preview\b/.test(location.search)||matchMedia('(prefers-reduced-motion: reduce)').matches){box.remove();return;}
-  var root=document.documentElement, done=false;
+  if(seen||/[?&]preview\b/.test(location.search)||matchMedia('(prefers-reduced-motion: reduce)').matches||!box.animate){box.remove();return;}
+  var root=document.documentElement, done=false, anims=[], timers=[];
   box.hidden=false; root.classList.add('intro-on');
-  function end(){ if(done)return; done=true; try{localStorage.setItem('228th-intro-at',String(Date.now()));sessionStorage.setItem('228th-intro','1');}catch(e){} box.classList.add('out'); root.classList.remove('intro-on'); setTimeout(function(){box.remove();},1000); }
+  var q=function(s){return box.querySelector(s);};
+  function end(){ if(done)return; done=true; try{localStorage.setItem('228th-intro-at',String(Date.now()));sessionStorage.setItem('228th-intro','1');}catch(e){}
+    timers.forEach(clearTimeout); box.classList.add('out'); root.classList.remove('intro-on'); setTimeout(function(){box.remove();},800); }
   document.getElementById('intro-skip').onclick=end;
-  v.addEventListener('ended',end); document.getElementById('intro-last').addEventListener('error',end);
-  v.addEventListener('timeupdate',function(){ if(v.duration&&v.currentTime>v.duration-0.6)end(); });
-  // Low Power Mode and some browsers block autoplay; don't leave people staring at black.
-  var p=v.play(); if(p&&p.catch)p.catch(end);
-  setTimeout(function(){ if(!done&&(v.paused||v.currentTime<0.1))end(); },2500);
-  setTimeout(end,9000);
+  setTimeout(end,9000); // safety net: never trap anyone behind the intro
+
+  var E='cubic-bezier(.2,.8,.2,1)', SNAP='cubic-bezier(.7,0,.2,1)';
+  function A(el,kf,o){var a=el.animate(kf,Object.assign({fill:'both'},o));anims.push(a);return a;}
+  function later(fn,ms){timers.push(setTimeout(fn,ms));}
+  function type(li,text,start,cls){later(function(){if(cls)li.className=cls;var i=0;(function step(){li.textContent=text.slice(0,++i)+(i<text.length?'_':'');if(i<text.length)later(step,22);})();},start);}
+  var GLYPH='ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#/\\<>';
+  function decode(el,html,plain,start,dur){later(function(){var t0=performance.now();(function f(now){var p=Math.min(1,(now-t0)/dur),n=plain.length,out='';
+    for(var i=0;i<n;i++){var ch=plain[i];if(ch===' '){out+=' ';continue;}out+=(i/n<p*1.15-0.1)?ch:GLYPH[(Math.random()*GLYPH.length)|0];}
+    el.textContent=out;if(p<1)requestAnimationFrame(f);else el.innerHTML=html;})(t0);},start);}
+
+  function play(){
+    if(done)return;
+    A(q('.i-scan'),[{top:'0%',opacity:0},{opacity:1,offset:.1},{top:'100%',opacity:.9}],{duration:900,easing:'ease-in'});
+    A(q('.i-scan'),[{opacity:.9},{opacity:0}],{duration:200,delay:900,fill:'forwards'});
+    A(q('.i-camo'),[{opacity:0,transform:'scale(1.08)'},{opacity:.22,offset:.15},{opacity:.05,offset:.3},{opacity:.16,offset:.45},{opacity:.08,transform:'scale(1)'}],{duration:3800,easing:'linear'});
+    var li=box.querySelectorAll('.i-boot li');
+    type(li[0],'228TH // BLACK SKULLS CORPS',150); type(li[1],'OPENING SECURE CHANNEL...',650); type(li[2],'CLEARANCE GRANTED',1250,'ok');
+    // skull lands, eyes light
+    A(q('.i-skull'),[{opacity:0,transform:'scale(1.25)',filter:'blur(10px) brightness(2)'},{opacity:1,transform:'scale(1)',filter:'blur(0) brightness(1)'}],{duration:520,delay:550,easing:E});
+    A(q('.i-eyes'),[{opacity:0},{opacity:1,offset:.3},{opacity:.35,offset:.45},{opacity:1,offset:.6},{opacity:.85}],{duration:900,delay:900});
+    // blasters shoot up from the bottom corners, one at a time
+    A(q('.i-ba'),[{opacity:0,transform:'translate(-55%,55%)'},{opacity:1,offset:.25},{opacity:1,transform:'translate(0,0)'}],{duration:420,delay:1250,easing:SNAP});
+    A(q('.i-bb'),[{opacity:0,transform:'translate(55%,55%)'},{opacity:1,offset:.25},{opacity:1,transform:'translate(0,0)'}],{duration:420,delay:1600,easing:SNAP});
+    // sword drives down through the middle, impact
+    A(q('.i-sword'),[{opacity:0,transform:'translateY(-90%)'},{opacity:1,offset:.2},{opacity:1,transform:'translateY(0)'}],{duration:380,delay:2000,easing:'cubic-bezier(.6,0,.9,.4)'});
+    A(q('.i-emblem'),[{transform:'translate(0,0)'},{transform:'translate(-4px,6px)'},{transform:'translate(3px,-3px)'},{transform:'translate(-2px,2px)'},{transform:'translate(0,0)'}],{duration:260,delay:2380,fill:'none'});
+    A(q('.i-ring'),[{opacity:.9,width:'10px',height:'10px',margin:'-5px 0 0 -5px'},{opacity:0,width:'900px',height:'900px',margin:'-450px 0 0 -450px'}],{duration:700,delay:2380,easing:'ease-out',fill:'forwards'});
+    A(q('.i-glow'),[{opacity:0},{opacity:1,offset:.25},{opacity:.7}],{duration:1600,delay:2380,easing:'ease-out'});
+    A(q('.i-skull'),[{filter:'brightness(1)'},{filter:'brightness(1.8)'},{filter:'brightness(1)'}],{duration:300,delay:2380,fill:'none'});
+    // name decodes, motto settles
+    decode(q('.i-title'),'<span>228th</span> Black Skulls Corps','228TH BLACK SKULLS CORPS',2500,750);
+    A(q('.i-sub'),[{opacity:0,letterSpacing:'.6em'},{opacity:1,letterSpacing:'.32em'}],{duration:700,delay:3100,easing:E});
+    // red line cuts across, then the site fades up
+    A(q('.i-cut'),[{transform:'scaleX(0)'},{transform:'scaleX(1)'}],{duration:280,delay:4300,easing:SNAP});
+    later(end,4650);
+  }
+  // borrow the emblem art from the hero (already in the page), then wait for it so nothing plays half-loaded
+  document.addEventListener('DOMContentLoaded',function(){
+    var parts={'i-sword':'sword','i-ba':'blasterA','i-bb':'blasterB','i-skull':'skull'}, imgs=[];
+    for(var k in parts){var im=q('.'+k), src=document.querySelector('[data-part="'+parts[k]+'"] image');
+      if(!src){end();return;} im.src=src.getAttribute('href'); imgs.push(im);}
+    Promise.all(imgs.map(function(i){return i.decode?i.decode().catch(function(){}):Promise.resolve();}))
+      .then(function(){return document.fonts&&document.fonts.ready;}).then(play,play);
+  });
 })();
 </script>
 
@@ -1680,7 +1747,7 @@ He left behind a holotape warning that the op had been a setup, with final order
   var nav=document.querySelector('header.nav'),name=nav&&nav.querySelector('.brand-name'),lastY=scrollY,ticking=false;
   if(name){
     name.classList.add('hold');
-    setTimeout(function(){name.classList.remove('hold');},document.getElementById('intro')?4300:350);
+    setTimeout(function(){name.classList.remove('hold');},document.getElementById('intro')?5200:350);
     addEventListener('scroll',function(){
       if(ticking)return;ticking=true;
       requestAnimationFrame(function(){
