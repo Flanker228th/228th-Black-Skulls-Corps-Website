@@ -6,7 +6,7 @@
 <title>228th Black Skulls Corps</title>
 <script>/* Site update check: phones keep old copies of pages for a while, so each page asks for the current
    version and, if it has changed, reloads itself fresh. Bump the number here and in version.txt on every publish. */
-(function(){var v="202610312359";
+(function(){var v="202611010012";
   var u=new URL(location.href);if(u.searchParams.get("preview")||u.searchParams.get("code")||/access_token|type=recovery/.test(location.hash))return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():"";}).then(function(t){t=t.trim();
     if(!t||t===v||u.searchParams.get("v")===t)return;u.searchParams.set("v",t);location.replace(u.href);}).catch(function(){});})();</script>
@@ -590,7 +590,7 @@ footer ul a:hover{color:var(--accent)}
 @keyframes gridDrift{to{transform:translateY(120px) scale(1.15)}}
 @keyframes spinIn{from{transform:rotate(-25deg) scale(.6);opacity:.2}}
 
-/* opening intro: plays once per visit, skippable, never for reduced motion.
+/* opening intro: plays once per visit, skippable, fade-only for reduced motion.
    Scan line + boot text, then the skull lands, blasters shoot up one at a time, the sword drives down,
    the name decodes, and a red line cuts it away to the site. Emblem art is borrowed from the hero at runtime. */
 #intro{position:fixed;inset:0;z-index:100;background:var(--bg);overflow:hidden;transition:opacity .7s ease}
@@ -638,11 +638,13 @@ html.intro-on,html.intro-on body{overflow:hidden}
 (function(){
   // Opening animation: plays whenever someone opens the site from outside it (typed address, bookmark, a link
   // from Discord), but not when moving between the site's own pages, and not again within a minute.
-  // Never in the edit page preview or for reduced-motion viewers.
+  // Never in the edit page preview. Reduced-motion viewers get a calm, fade-only version.
   var box=document.getElementById('intro'), seen=false;
   try{var ref=document.referrer?new URL(document.referrer):null;if(ref&&ref.origin===location.origin)seen=true;}catch(e){}
   try{if(Date.now()-(+localStorage.getItem('228th-intro-at')||0)<60000)seen=true;}catch(e){}
-  if(seen||/[?&]preview\b/.test(location.search)||matchMedia('(prefers-reduced-motion: reduce)').matches||!box.animate){box.remove();return;}
+  if(seen||/[?&]preview\b/.test(location.search)||!box.animate){box.remove();return;}
+  // reduced-motion viewers (Windows "Animation effects" off, macOS "Reduce motion") get a calm fade-only version
+  var calm=matchMedia('(prefers-reduced-motion: reduce)').matches;
   var root=document.documentElement, done=false, anims=[], timers=[];
   box.hidden=false; root.classList.add('intro-on');
   var q=function(s){return box.querySelector(s);};
@@ -662,6 +664,17 @@ html.intro-on,html.intro-on body{overflow:hidden}
 
   function play(){
     if(done)return;
+    if(calm){
+      var li=box.querySelectorAll('.i-boot li'); li[0].textContent='228TH // BLACK SKULLS CORPS'; li[1].textContent='OPENING SECURE CHANNEL...'; li[2].textContent='CLEARANCE GRANTED'; li[2].className='ok';
+      A(q('.i-boot'),[{opacity:0},{opacity:1}],{duration:500,easing:'ease'});
+      ['.i-skull','.i-ba','.i-bb','.i-sword'].forEach(function(sel,i){A(q(sel),[{opacity:0},{opacity:1}],{duration:500,delay:300+i*250,easing:'ease'});});
+      A(q('.i-eyes'),[{opacity:0},{opacity:.85}],{duration:600,delay:600});
+      A(q('.i-glow'),[{opacity:0},{opacity:.7}],{duration:900,delay:1300});
+      var t=q('.i-title'); t.innerHTML='<span>228th</span> Black Skulls Corps';
+      A(t,[{opacity:0},{opacity:1}],{duration:600,delay:1500,easing:'ease'});
+      A(q('.i-sub'),[{opacity:0},{opacity:1}],{duration:600,delay:1900,easing:'ease'});
+      later(end,3600); return;
+    }
     A(q('.i-scan'),[{top:'0%',opacity:0},{opacity:1,offset:.1},{top:'100%',opacity:.9}],{duration:900,easing:'ease-in'});
     A(q('.i-scan'),[{opacity:.9},{opacity:0}],{duration:200,delay:900,fill:'forwards'});
     A(q('.i-camo'),[{opacity:0,transform:'scale(1.08)'},{opacity:.22,offset:.15},{opacity:.05,offset:.3},{opacity:.16,offset:.45},{opacity:.08,transform:'scale(1)'}],{duration:3800,easing:'linear'});
