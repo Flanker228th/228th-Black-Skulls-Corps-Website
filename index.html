@@ -6,7 +6,7 @@
 <title>228th Black Skulls Corps</title>
 <script>/* Site update check: phones keep old copies of pages for a while, so each page asks for the current
    version and, if it has changed, reloads itself fresh. Bump the number here and in version.txt on every publish. */
-(function(){var v="202611010050";
+(function(){var v="202611010100";
   var u=new URL(location.href);if(u.searchParams.get("preview")||u.searchParams.get("code")||/access_token|type=recovery/.test(location.hash))return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():"";}).then(function(t){t=t.trim();
     if(!t||t===v||u.searchParams.get("v")===t)return;u.searchParams.set("v",t);try{sessionStorage.setItem("228th-vreload","1");}catch(e){}location.replace(u.href);}).catch(function(){});})();</script>
@@ -656,7 +656,7 @@ html.intro-on,html.intro-on body{overflow:hidden}
   function end(){ if(done)return; done=true; try{localStorage.setItem('228th-intro-at',String(Date.now()));sessionStorage.setItem('228th-intro','1');}catch(e){}
     timers.forEach(clearTimeout); box.classList.add('out'); root.classList.remove('intro-on'); setTimeout(function(){box.remove();},800); }
   document.getElementById('intro-skip').onclick=end;
-  setTimeout(end,9000); // safety net: never trap anyone behind the intro
+  setTimeout(end,11000); // safety net: never trap anyone behind the intro
 
   var E='cubic-bezier(.2,.8,.2,1)', SNAP='cubic-bezier(.7,0,.2,1)';
   function A(el,kf,o){var a=el.animate(kf,Object.assign({fill:'both'},o));anims.push(a);return a;}
@@ -682,7 +682,7 @@ html.intro-on,html.intro-on body{overflow:hidden}
       A(q('.i-sub'),[{opacity:0},{opacity:1}],{duration:600,delay:1900,easing:'ease'});
       later(end,3600); return;
     }
-    A(q('.i-scan'),[{top:'0%',opacity:0},{opacity:1,offset:.1},{top:'100%',opacity:.9}],{duration:900,easing:'ease-in'});
+    A(q('.i-scan'),[{transform:'translateY(0)',opacity:0},{opacity:1,offset:.1},{transform:'translateY(100vh)',opacity:.9}],{duration:900,easing:'ease-in'});
     A(q('.i-scan'),[{opacity:.9},{opacity:0}],{duration:200,delay:900,fill:'forwards'});
     A(q('.i-camo'),[{opacity:0,transform:'scale(1.08)'},{opacity:.1,offset:.15},{opacity:.02,offset:.3},{opacity:.07,offset:.45},{opacity:.035,transform:'scale(1)'}],{duration:3800,easing:'linear'});
     var li=box.querySelectorAll('.i-boot li');
@@ -706,13 +706,22 @@ html.intro-on,html.intro-on body{overflow:hidden}
     A(q('.i-cut'),[{transform:'scaleX(0)'},{transform:'scaleX(1)'}],{duration:280,delay:4300,easing:SNAP});
     later(end,4650);
   }
+  // Desktop does heavy page setup right after load; starting then makes the intro skip ahead.
+  // Wait for the page load (max 2.5s), then for the frame rate to settle (max 1.5s more), then play.
+  function settle(){
+    var go=false; function start(){ if(go)return; go=true;
+      var t0=performance.now(), last=t0, smooth=0;
+      requestAnimationFrame(function f(now){ smooth=(now-last<34)?smooth+1:0; last=now;
+        if(smooth>=6||now-t0>1500)play(); else requestAnimationFrame(f); }); }
+    if(document.readyState==='complete')start(); else { addEventListener('load',start,{once:true}); setTimeout(start,2500); }
+  }
   // borrow the emblem art from the hero (already in the page), then wait for it so nothing plays half-loaded
   document.addEventListener('DOMContentLoaded',function(){
     var parts={'i-sword':'sword','i-ba':'blasterA','i-bb':'blasterB','i-skull':'skull'}, imgs=[];
     for(var k in parts){var im=q('.'+k), src=document.querySelector('[data-part="'+parts[k]+'"] image');
       if(!src){end();return;} im.src=src.getAttribute('href'); imgs.push(im);}
     Promise.all(imgs.map(function(i){return i.decode?i.decode().catch(function(){}):Promise.resolve();}))
-      .then(function(){return document.fonts&&document.fonts.ready;}).then(play,play);
+      .then(function(){return document.fonts&&document.fonts.ready;}).then(settle,settle);
   });
 })();
 </script>
