@@ -6,7 +6,7 @@
 <title>228th Black Skulls Corps</title>
 <script>/* Site update check: phones keep old copies of pages for a while, so each page asks for the current
    version and, if it has changed, reloads itself fresh. Bump the number here and in version.txt on every publish. */
-(function(){var v="202611010030";
+(function(){var v="202611010040";
   var u=new URL(location.href);if(u.searchParams.get("preview")||u.searchParams.get("code")||/access_token|type=recovery/.test(location.hash))return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():"";}).then(function(t){t=t.trim();
     if(!t||t===v||u.searchParams.get("v")===t)return;u.searchParams.set("v",t);try{sessionStorage.setItem("228th-vreload","1");}catch(e){}location.replace(u.href);}).catch(function(){});})();</script>
@@ -670,8 +670,9 @@ html.intro-on,html.intro-on body{overflow:hidden}
     if(calm){
       var li=box.querySelectorAll('.i-boot li'); li[0].textContent='228TH // BLACK SKULLS CORPS'; li[1].textContent='OPENING SECURE CHANNEL...'; li[2].textContent='CLEARANCE GRANTED'; li[2].className='ok';
       A(q('.i-boot'),[{opacity:0},{opacity:1}],{duration:500,easing:'ease'});
-      ['.i-skull','.i-ba','.i-bb','.i-sword'].forEach(function(sel,i){A(q(sel),[{opacity:0},{opacity:1}],{duration:500,delay:300+i*250,easing:'ease'});});
-      A(q('.i-eyes'),[{opacity:0},{opacity:.85}],{duration:600,delay:600});
+      A(q('.i-skull'),[{opacity:0,filter:'grayscale(1)',easing:'ease'},{opacity:1,filter:'grayscale(1)',offset:.5},{opacity:1,filter:'grayscale(1)',offset:.62},{opacity:1,filter:'grayscale(0)'}],{duration:1050,delay:300});
+      ['.i-ba','.i-bb','.i-sword'].forEach(function(sel,i){A(q(sel),[{opacity:0},{opacity:1}],{duration:500,delay:550+i*250,easing:'ease'});});
+      A(q('.i-eyes'),[{opacity:0},{opacity:.85}],{duration:600,delay:950});
       A(q('.i-glow'),[{opacity:0},{opacity:.7}],{duration:900,delay:1300});
       var t=q('.i-title'); t.innerHTML='<span>228th</span> Black Skulls Corps';
       A(t,[{opacity:0},{opacity:1}],{duration:600,delay:1500,easing:'ease'});
@@ -684,8 +685,8 @@ html.intro-on,html.intro-on body{overflow:hidden}
     var li=box.querySelectorAll('.i-boot li');
     type(li[0],'228TH // BLACK SKULLS CORPS',150); type(li[1],'OPENING SECURE CHANNEL...',650); type(li[2],'CLEARANCE GRANTED',1250,'ok');
     // skull lands, eyes light
-    A(q('.i-skull'),[{opacity:0,transform:'scale(1.25)',filter:'blur(10px) brightness(2)'},{opacity:1,transform:'scale(1)',filter:'blur(0) brightness(1)'}],{duration:520,delay:550,easing:E});
-    A(q('.i-eyes'),[{opacity:0},{opacity:1,offset:.3},{opacity:.35,offset:.45},{opacity:1,offset:.6},{opacity:.85}],{duration:900,delay:900});
+    A(q('.i-skull'),[{opacity:0,transform:'scale(1.25)',filter:'blur(10px) grayscale(1) brightness(.6)',easing:E},{opacity:1,transform:'scale(1)',filter:'blur(0) grayscale(1) brightness(1)',offset:.55},{opacity:1,transform:'scale(1)',filter:'blur(0) grayscale(1) brightness(1)',offset:.65},{opacity:1,transform:'scale(1)',filter:'blur(0) grayscale(0) brightness(1)'}],{duration:950,delay:550});
+    A(q('.i-eyes'),[{opacity:0},{opacity:1,offset:.3},{opacity:.35,offset:.45},{opacity:1,offset:.6},{opacity:.85}],{duration:900,delay:1150});
     // blasters shoot up from the bottom corners, one at a time
     A(q('.i-ba'),[{opacity:0,transform:'translate(-55%,55%)'},{opacity:1,offset:.25},{opacity:1,transform:'translate(0,0)'}],{duration:420,delay:1250,easing:SNAP});
     A(q('.i-bb'),[{opacity:0,transform:'translate(55%,55%)'},{opacity:1,offset:.25},{opacity:1,transform:'translate(0,0)'}],{duration:420,delay:1600,easing:SNAP});
