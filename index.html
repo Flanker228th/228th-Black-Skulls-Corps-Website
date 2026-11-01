@@ -6,10 +6,10 @@
 <title>228th Black Skulls Corps</title>
 <script>/* Site update check: phones keep old copies of pages for a while, so each page asks for the current
    version and, if it has changed, reloads itself fresh. Bump the number here and in version.txt on every publish. */
-(function(){var v="202611010012";
+(function(){var v="202611010020";
   var u=new URL(location.href);if(u.searchParams.get("preview")||u.searchParams.get("code")||/access_token|type=recovery/.test(location.hash))return;
   fetch("version.txt?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.text():"";}).then(function(t){t=t.trim();
-    if(!t||t===v||u.searchParams.get("v")===t)return;u.searchParams.set("v",t);location.replace(u.href);}).catch(function(){});})();</script>
+    if(!t||t===v||u.searchParams.get("v")===t)return;u.searchParams.set("v",t);try{sessionStorage.setItem("228th-vreload","1");}catch(e){}location.replace(u.href);}).catch(function(){});})();</script>
 <script src="auth/fx.js?v=8" data-nav-only></script>
 <meta name="description" content="Star Wars milsim and RP community since 2010. Now recruiting for VRChat, Arma 3 and Minecraft.">
 <meta name="theme-color" content="#0a0a0b">
@@ -640,7 +640,9 @@ html.intro-on,html.intro-on body{overflow:hidden}
   // from Discord), but not when moving between the site's own pages, and not again within a minute.
   // Never in the edit page preview. Reduced-motion viewers get a calm, fade-only version.
   var box=document.getElementById('intro'), seen=false;
-  try{var ref=document.referrer?new URL(document.referrer):null;if(ref&&ref.origin===location.origin)seen=true;}catch(e){}
+  // The update check above reloads stale copies of the page; that reload looks like an in-site click, so don't count it.
+  var vreload=false; try{vreload=sessionStorage.getItem('228th-vreload')==='1';sessionStorage.removeItem('228th-vreload');}catch(e){}
+  try{var ref=document.referrer?new URL(document.referrer):null;if(!vreload&&ref&&ref.origin===location.origin)seen=true;}catch(e){}
   try{if(Date.now()-(+localStorage.getItem('228th-intro-at')||0)<60000)seen=true;}catch(e){}
   if(seen||/[?&]preview\b/.test(location.search)||!box.animate){box.remove();return;}
   // reduced-motion viewers (Windows "Animation effects" off, macOS "Reduce motion") get a calm fade-only version
