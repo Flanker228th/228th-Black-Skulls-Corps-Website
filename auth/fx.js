@@ -207,3 +207,34 @@
   function ready() { arrived(); enter(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ready); else ready();
 })();
+
+/* Smooth mouse-wheel scrolling on the member pages, same as the main site: each wheel notch glides a short way
+   instead of jumping. Trackpads, touch, keyboard and scrollbar dragging keep normal scrolling. */
+(function () {
+  var me = document.currentScript, root = document.documentElement;
+  if ((me && me.hasAttribute('data-nav-only')) || /[?&]preview\b/.test(location.search) ||
+      (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+  var target = scrollY, cur = scrollY, running = false, ours = false;
+  function maxY() { return root.scrollHeight - innerHeight; }
+  function step() {
+    cur += (target - cur) * .12;
+    if (Math.abs(target - cur) < .6) cur = target;
+    ours = true; scrollTo({ top: cur, behavior: 'instant' });
+    if (cur !== target) requestAnimationFrame(step); else running = false;
+  }
+  addEventListener('wheel', function (e) {
+    if (e.ctrlKey || e.defaultPrevented || document.querySelector('dialog[open]')) return;
+    var dy = e.deltaMode === 1 ? e.deltaY * 40 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY;
+    if (Math.abs(dy) < 40 || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // trackpads send small steps: leave them alone
+    for (var el = e.target; el && el !== document.body && el.nodeType === 1; el = el.parentElement) {
+      if (/^(SELECT|TEXTAREA)$/.test(el.tagName)) return;
+      var cs = getComputedStyle(el); if (/(auto|scroll)/.test(cs.overflowY) && el.scrollHeight > el.clientHeight) return;
+    }
+    e.preventDefault();
+    if (!running) { cur = scrollY; target = scrollY; }
+    // About a third of a usual notch per click, so one scroll moves the page a little at a time.
+    target = Math.max(0, Math.min(maxY(), target + dy * .45));
+    if (!running) { running = true; requestAnimationFrame(step); }
+  }, { passive: false });
+  addEventListener('scroll', function () { if (ours) { ours = false; return; } if (!running) { cur = target = scrollY; } else if (Math.abs(scrollY - cur) > 2) { cur = target = scrollY; running = false; } }, { passive: true });
+})();
